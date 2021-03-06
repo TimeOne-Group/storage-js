@@ -1,5 +1,37 @@
 
 /*! storage-js 0.1.0 https://github.com/https://github.com/TimeOne-Group/storage-js#readme @license GPL-3.0 */
+/*! @timeone-group/error-logger-js 0.2.2 https://github.com/https://github.com/TimeOne-Group/error-logger-js#readme @license GPL-3.0 */
+class AppError extends Error {
+  /**
+   * AppError Constructor
+   * @param {integer} severity
+   * @param  {...any} params
+   */
+  constructor(severity, ...params) {
+    super(...params);
+    this.severity = severity;
+  }
+}
+
+var Severity = {
+  ERROR: 1,
+  WARNING: 2,
+};
+
+class Key {
+  constructor(prefix) {
+    this.prefix = prefix;
+  }
+
+  get(id) {
+    return `${this.prefix}_${id}`;
+  }
+
+  getIndex() {
+    return this.get('INDEX');
+  }
+}
+
 /*! pako 2.0.3 https://github.com/nodeca/pako @license (MIT AND Zlib) */
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
 // (C) 2014-2017 Vitaly Puzrin and Andrey Tupitsin
@@ -6697,32 +6729,43 @@ var pako = {
 	constants: constants_1
 };
 
-/*! @timeone-group/error-logger-js 0.2.2 https://github.com/https://github.com/TimeOne-Group/error-logger-js#readme @license GPL-3.0 */
-class AppError extends Error {
-  /**
-   * AppError Constructor
-   * @param {integer} severity
-   * @param  {...any} params
-   */
-  constructor(severity, ...params) {
-    super(...params);
-    this.severity = severity;
+class Store {
+  constructor(engine) {
+    this.engine = engine;
+  }
+
+  set(key, object) {
+    window[this.engine].setItem(key, pako.deflate(JSON.stringify(object)));
+  }
+
+  get(key) {
+    const value = window[this.engine].getItem(key);
+
+    if (value) {
+      const compressed = new Uint8Array(value.split(','));
+      return JSON.parse(
+        pako.inflate(compressed, {
+          to: 'string',
+        })
+      );
+    }
+
+    return null;
+  }
+
+  delete(key) {
+    return window[this.engine].removeItem(key);
   }
 }
-
-var Severity = {
-  ERROR: 1,
-  WARNING: 2,
-};
 
 const DEFAULT_STORAGE = 'localStorage';
 const DEFAULT_PREFIX = 'storage-js';
 
 class StorageJS {
   constructor({ storageEngine, defaultTTL, prefix } = {}) {
-    this.storageEngine = storageEngine || DEFAULT_STORAGE;
+    this.store = new Store(storageEngine || DEFAULT_STORAGE);
     this.defaultTTL = defaultTTL || 0;
-    this.prefix = prefix || DEFAULT_PREFIX;
+    this.key = new Key(prefix || DEFAULT_PREFIX);
   }
 
   save(object, { ttl } = {}) {
@@ -6736,42 +6779,52 @@ class StorageJS {
 
     const now = new Date().getTime();
     if (ttl) {
-      savedObject.ttl = now + ttl;
+      savedObject.ttl = now + ttl * 1000;
     } else if (this.defaultTTL > 0) {
-      savedObject.ttl = now + this.defaultTTL;
+      savedObject.ttl = now + this.defaultTTL * 1000;
     }
 
-    window[this.storageEngine].setItem(
-      this.buildKey(object.id),
-      pako.deflate(JSON.stringify(savedObject))
-    );
+    this.store.set(this.key.get(object.id), savedObject);
+    this.addToIndex(object.id);
   }
 
   find(id) {
-    const value = window[this.storageEngine].getItem(this.buildKey(id));
-
-    if (value) {
-      const compressed = new Uint8Array(value.split(','));
-      const savedObject = JSON.parse(
-        pako.inflate(compressed, {
-          to: 'string',
-        })
-      );
-
-      if (!savedObject.ttl || new Date().getTime() <= savedObject.ttl) {
-        return savedObject.object;
-      }
+    const savedObject = this.store.get(this.key.get(id));
+    if (
+      savedObject &&
+      (!savedObject.ttl || new Date().getTime() <= savedObject.ttl)
+    ) {
+      return savedObject.object;
     }
 
     return {};
   }
 
-  delete(id) {
-    return window[this.storageEngine].removeItem(this.buildKey(id));
+  findAll() {
+    return Array.from(this.loadIndex())
+      .map((id) => this.find(id))
+      .filter((object) => !!object);
   }
 
-  buildKey(key) {
-    return `${this.prefix}_${key}`;
+  delete(id) {
+    this.removeToIndex(id);
+    return this.store.delete(this.key.get(id));
+  }
+
+  loadIndex() {
+    return new Set(this.store.get(this.key.getIndex()));
+  }
+
+  addToIndex(id) {
+    const index = this.loadIndex();
+    index.add(id);
+    this.store.set(this.key.getIndex(), [...index]);
+  }
+
+  removeToIndex(id) {
+    const index = this.loadIndex();
+    index.delete(id);
+    this.store.set(this.key.getIndex(), [...index]);
   }
 }
 

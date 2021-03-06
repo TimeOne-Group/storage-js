@@ -22,7 +22,7 @@
   "keywords": [
     "storage"
   ],
-  "author": "Fabien Barbaus <fabien.barbaud@timeonegroup.com>",
+  "author": "Fabien Barbaud <fabien.barbaud@timeonegroup.com>",
   "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/TimeOne-Group/storage-js/issues"
@@ -30,9 +30,7 @@
   "homepage": "https://github.com/TimeOne-Group/storage-js#readme",
   "dependencies": {
     "@timeone-group/error-logger-js": "^0.2.2",
-    "core-js": "^3.9.1",
-    "pako": "^2.0.3",
-    "regenerator-runtime": "^0.13.7"
+    "pako": "^2.0.3"
   },
   "devDependencies": {
     "@ava/babel": "^1.0.1",
@@ -42,8 +40,10 @@
     "@rollup/plugin-commonjs": "^17.1.0",
     "@rollup/plugin-node-resolve": "^11.2.0",
     "ava": "^3.15.0",
+    "await-delay": "^1.0.0",
     "babel-loader-exclude-node-modules-except": "^1.1.2",
     "browser-env": "^3.3.0",
+    "core-js": "^3.9.1",
     "eslint": "^7.21.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-config-prettier": "^8.1.0",

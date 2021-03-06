@@ -10,9 +10,12 @@
   <body>
     <script>
       var test = new StorageJS();
-      test.save({ id: 'uuid', test: 'ok' });
-      console.log(test.find('uuid'));
-      test.delete('uuid')
+      test.save({ id: 1, test: 'ok' });
+      test.save({ id: 2, test: 'ok' });
+      var objects = test.findAll();
+      console.log(objects[1]);
+      test.delete(1)
+      test.delete(2)
     </script>
   </body>
 </html>

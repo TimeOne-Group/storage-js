@@ -1,14 +1,15 @@
-import pako from 'pako';
 import { AppError, Severity } from '@timeone-group/error-logger-js';
+import Key from './Key';
+import Store from './Store';
 
 const DEFAULT_STORAGE = 'localStorage';
 const DEFAULT_PREFIX = 'storage-js';
 
 class StorageJS {
   constructor({ storageEngine, defaultTTL, prefix } = {}) {
-    this.storageEngine = storageEngine || DEFAULT_STORAGE;
+    this.store = new Store(storageEngine || DEFAULT_STORAGE);
     this.defaultTTL = defaultTTL || 0;
-    this.prefix = prefix || DEFAULT_PREFIX;
+    this.key = new Key(prefix || DEFAULT_PREFIX);
   }
 
   save(object, { ttl } = {}) {
@@ -22,42 +23,52 @@ class StorageJS {
 
     const now = new Date().getTime();
     if (ttl) {
-      savedObject.ttl = now + ttl;
+      savedObject.ttl = now + ttl * 1000;
     } else if (this.defaultTTL > 0) {
-      savedObject.ttl = now + this.defaultTTL;
+      savedObject.ttl = now + this.defaultTTL * 1000;
     }
 
-    window[this.storageEngine].setItem(
-      this.buildKey(object.id),
-      pako.deflate(JSON.stringify(savedObject))
-    );
+    this.store.set(this.key.get(object.id), savedObject);
+    this.addToIndex(object.id);
   }
 
   find(id) {
-    const value = window[this.storageEngine].getItem(this.buildKey(id));
-
-    if (value) {
-      const compressed = new Uint8Array(value.split(','));
-      const savedObject = JSON.parse(
-        pako.inflate(compressed, {
-          to: 'string',
-        })
-      );
-
-      if (!savedObject.ttl || new Date().getTime() <= savedObject.ttl) {
-        return savedObject.object;
-      }
+    const savedObject = this.store.get(this.key.get(id));
+    if (
+      savedObject &&
+      (!savedObject.ttl || new Date().getTime() <= savedObject.ttl)
+    ) {
+      return savedObject.object;
     }
 
     return {};
   }
 
-  delete(id) {
-    return window[this.storageEngine].removeItem(this.buildKey(id));
+  findAll() {
+    return Array.from(this.loadIndex())
+      .map((id) => this.find(id))
+      .filter((object) => !!object);
   }
 
-  buildKey(key) {
-    return `${this.prefix}_${key}`;
+  delete(id) {
+    this.removeToIndex(id);
+    return this.store.delete(this.key.get(id));
+  }
+
+  loadIndex() {
+    return new Set(this.store.get(this.key.getIndex()));
+  }
+
+  addToIndex(id) {
+    const index = this.loadIndex();
+    index.add(id);
+    this.store.set(this.key.getIndex(), [...index]);
+  }
+
+  removeToIndex(id) {
+    const index = this.loadIndex();
+    index.delete(id);
+    this.store.set(this.key.getIndex(), [...index]);
   }
 }
 
