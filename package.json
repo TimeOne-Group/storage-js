@@ -1,0 +1,65 @@
+{
+  "name": "storage-js",
+  "version": "0.1.0",
+  "description": "Store data in browser",
+  "main": "main/index.js",
+  "module": "./dist/index.mjs",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "start": "rollup -c -w",
+    "test": "nyc ava --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TimeOne-Group/storage-js.git"
+  },
+  "keywords": [
+    "storage"
+  ],
+  "author": "Fabien Barbaus <fabien.barbaud@timeonegroup.com>",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/TimeOne-Group/storage-js/issues"
+  },
+  "homepage": "https://github.com/TimeOne-Group/storage-js#readme",
+  "dependencies": {
+    "@timeone-group/error-logger-js": "^0.2.2",
+    "core-js": "^3.9.1",
+    "pako": "^2.0.3",
+    "regenerator-runtime": "^0.13.7"
+  },
+  "devDependencies": {
+    "@ava/babel": "^1.0.1",
+    "@babel/preset-env": "^7.13.9",
+    "@babel/register": "^7.13.8",
+    "@rollup/plugin-babel": "^5.3.0",
+    "@rollup/plugin-commonjs": "^17.1.0",
+    "@rollup/plugin-node-resolve": "^11.2.0",
+    "ava": "^3.15.0",
+    "babel-loader-exclude-node-modules-except": "^1.1.2",
+    "browser-env": "^3.3.0",
+    "eslint": "^7.21.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-prettier": "^3.3.1",
+    "nyc": "^15.1.0",
+    "prettier": "^2.2.1",
+    "rollup": "^2.40.0",
+    "rollup-watch": "^4.3.1"
+  },
+  "browserslist": "last 2 versions, > 0.5%, ie >= 7",
+  "ava": {
+    "babel": true,
+    "require": [
+      "./test/_setup-browser-env.js",
+      "@babel/register"
+    ]
+  }
+}
