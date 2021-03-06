@@ -1,3 +1,5 @@
+import 'core-js/es/array/from';
+import 'core-js/es/set';
 import { AppError, Severity } from '@timeone-group/error-logger-js';
 import Key from './Key';
 import Store from './Store';
@@ -56,7 +58,11 @@ class StorageJS {
   }
 
   loadIndex() {
-    return new Set(this.store.get(this.key.getIndex()));
+    const index = this.store.get(this.key.getIndex());
+    if (index) {
+      return new Set(index);
+    }
+    return new Set();
   }
 
   addToIndex(id) {
@@ -69,6 +75,10 @@ class StorageJS {
     const index = this.loadIndex();
     index.delete(id);
     this.store.set(this.key.getIndex(), [...index]);
+  }
+
+  resetIndex() {
+    this.store.delete(this.key.getIndex());
   }
 }
 
