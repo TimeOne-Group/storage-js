@@ -1,5 +1,5 @@
 
-/*! @timeone-group/storage-js 0.1.3 https://github.com/https://github.com/TimeOne-Group/storage-js#readme @license GPL-3.0 */
+/*! @timeone-group/storage-js 0.1.4 https://github.com/https://github.com/TimeOne-Group/storage-js#readme @license GPL-3.0 */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -10068,7 +10068,7 @@
       key: "delete",
       value: function _delete(id) {
         this.removeToIndex(id);
-        return this.store["delete"](this.key.get(id));
+        return this.store.delete(this.key.get(id));
       }
     }, {
       key: "loadIndex",
@@ -10092,13 +10092,13 @@
       key: "removeToIndex",
       value: function removeToIndex(id) {
         var index = this.loadIndex();
-        index["delete"](id);
+        index.delete(id);
         this.store.set(this.key.getIndex(), _toConsumableArray(index));
       }
     }, {
       key: "resetIndex",
       value: function resetIndex() {
-        this.store["delete"](this.key.getIndex());
+        this.store.delete(this.key.getIndex());
       }
     }]);
 
