@@ -35,10 +35,19 @@ export default [
     input: 'src/index.js',
     output: [{ file: 'dist/index.mjs', format: 'esm' }],
     plugins: [nodeResolve(), commonjs(), banner],
+    external: ['pako', '@timeone-group/error-logger-js'],
   },
   {
     input: 'src/index.js',
-    output: [{ file: 'dist/index.cjs', format: 'cjs' }],
+    output: [
+      {
+        file: 'dist/index.cjs',
+        format: 'cjs',
+        name: 'StorageJS',
+        exports: 'named',
+      },
+    ],
     plugins: [nodeResolve(), commonjs(), banner],
+    external: ['pako', '@timeone-group/error-logger-js'],
   },
 ];
