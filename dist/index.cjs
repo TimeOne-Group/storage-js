@@ -1,5 +1,5 @@
 
-/*! @timeone-group/storage-js 0.1.2 https://github.com/https://github.com/TimeOne-Group/storage-js#readme @license GPL-3.0 */
+/*! @timeone-group/storage-js 0.1.3 https://github.com/https://github.com/TimeOne-Group/storage-js#readme @license GPL-3.0 */
 'use strict';
 
 var ceil = Math.ceil;
