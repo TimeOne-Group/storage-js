@@ -4,6 +4,7 @@ import delay from 'await-delay';
 import StorageJS from '../src/index';
 
 const store = new StorageJS();
+const storePrivacy = new StorageJS({ storageEngine: 'Privacy' });
 
 test('save object', (t) => {
   const object = { id: 'uuid', test: 'ok' };
@@ -76,4 +77,38 @@ test('find all', (t) => {
       test: 'ok',
     },
   ]);
+});
+
+test('reset index', (t) => {
+  const storeReset = new StorageJS({ prefix: 'resetIndex' });
+  storeReset.save({ id: 1, test: 'ok' });
+  storeReset.save({ id: 2, test: 'ok' });
+  storeReset.save({ id: 3, test: 'ok' });
+  storeReset.save({ id: 4, test: 'ok' });
+  storeReset.resetIndex();
+  t.deepEqual(storeReset.findAll(), []);
+});
+
+test('Unknow engine', (t) => {
+  const error = t.throws(
+    () => {
+      const storeUnknow = new StorageJS({ storageEngine: 'Wrong' });
+      storeUnknow.save({});
+    },
+    { instanceOf: AppError }
+  );
+  t.is(error.message, 'Unknow engine');
+});
+
+test('save Privacy object', (t) => {
+  const object = { id: 'privacy', test: 'ok' };
+  storePrivacy.save(object);
+  t.deepEqual(storePrivacy.find('privacy'), object);
+});
+
+test('delete Privacy object', (t) => {
+  const object = { id: 'privacyDelete', test: 'ok' };
+  storePrivacy.save(object);
+  storePrivacy.delete('privacyDelete');
+  t.deepEqual(storePrivacy.find('privacyDelete'), {});
 });

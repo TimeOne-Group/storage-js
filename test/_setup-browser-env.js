@@ -1,4 +1,5 @@
 const browserEnv = require('browser-env');
+require('regenerator-runtime/runtime');
 
 browserEnv({
   url: 'http://localhost',

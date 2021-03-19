@@ -1,20 +1,33 @@
-import { Logger } from '@timeone-group/error-logger-js';
+import { AppError, Logger, Severity } from '@timeone-group/error-logger-js';
 import pako from 'pako';
+import Privacy from './Engine/Privacy';
 
 class Store {
   constructor(engine) {
-    this.engine = engine;
+    switch (engine) {
+      case 'localStorage':
+      case 'sessionStorage':
+        this.engine = window[engine];
+        break;
+
+      case 'Privacy':
+        this.engine = Privacy;
+        break;
+
+      default:
+        throw new AppError(Severity.ERROR, 'Unknow engine');
+    }
   }
 
   set(key, object) {
-    window[this.engine].setItem(
+    this.engine.setItem(
       key,
       Array.from(pako.deflate(JSON.stringify(object))).join(',')
     );
   }
 
   get(key) {
-    const value = window[this.engine].getItem(key);
+    const value = this.engine.getItem(key);
 
     if (value) {
       try {
@@ -34,7 +47,7 @@ class Store {
   }
 
   delete(key) {
-    return window[this.engine].removeItem(key);
+    return this.engine.removeItem(key);
   }
 }
 
