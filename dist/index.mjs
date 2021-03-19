@@ -1,6 +1,6 @@
 
 /*! @timeone-group/storage-js 0.1.4 https://github.com/https://github.com/TimeOne-Group/storage-js#readme @license GPL-3.0 */
-import { Logger, AppError, Severity } from '@timeone-group/error-logger-js';
+import { AppError, Severity, Logger } from '@timeone-group/error-logger-js';
 import pako from 'pako';
 
 var ceil = Math.ceil;
@@ -161,9 +161,9 @@ var setGlobal = function (key, value) {
 };
 
 var SHARED = '__core-js_shared__';
-var store$1 = global$1[SHARED] || setGlobal(SHARED, {});
+var store$2 = global$1[SHARED] || setGlobal(SHARED, {});
 
-var sharedStore = store$1;
+var sharedStore = store$2;
 
 var functionToString = Function.toString;
 
@@ -228,20 +228,20 @@ var getterFor = function (TYPE) {
 };
 
 if (nativeWeakMap) {
-  var store = sharedStore.state || (sharedStore.state = new WeakMap());
-  var wmget = store.get;
-  var wmhas = store.has;
-  var wmset = store.set;
+  var store$1 = sharedStore.state || (sharedStore.state = new WeakMap());
+  var wmget = store$1.get;
+  var wmhas = store$1.has;
+  var wmset = store$1.set;
   set = function (it, metadata) {
     metadata.facade = it;
-    wmset.call(store, it, metadata);
+    wmset.call(store$1, it, metadata);
     return metadata;
   };
   get = function (it) {
-    return wmget.call(store, it) || {};
+    return wmget.call(store$1, it) || {};
   };
   has = function (it) {
-    return wmhas.call(store, it);
+    return wmhas.call(store$1, it);
   };
 } else {
   var STATE = sharedKey('state');
@@ -1700,20 +1700,46 @@ class Key {
   }
 }
 
+const store = {};
+
+const Privacy = {
+  setItem: (key, value) => {
+    store[key] = value;
+    return true;
+  },
+  getItem: (key) => store[key],
+  removeItem: (key) => {
+    delete store[key];
+    return true;
+  },
+};
+
 class Store {
   constructor(engine) {
-    this.engine = engine;
+    switch (engine) {
+      case 'localStorage':
+      case 'sessionStorage':
+        this.engine = window[engine];
+        break;
+
+      case 'Privacy':
+        this.engine = Privacy;
+        break;
+
+      default:
+        throw new AppError(Severity.ERROR, 'Unknow engine');
+    }
   }
 
   set(key, object) {
-    window[this.engine].setItem(
+    this.engine.setItem(
       key,
       Array.from(pako.deflate(JSON.stringify(object))).join(',')
     );
   }
 
   get(key) {
-    const value = window[this.engine].getItem(key);
+    const value = this.engine.getItem(key);
 
     if (value) {
       try {
@@ -1733,7 +1759,7 @@ class Store {
   }
 
   delete(key) {
-    return window[this.engine].removeItem(key);
+    return this.engine.removeItem(key);
   }
 }
 

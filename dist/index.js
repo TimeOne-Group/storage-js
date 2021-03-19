@@ -400,9 +400,9 @@
   };
 
   var SHARED = '__core-js_shared__';
-  var store$1 = global$1[SHARED] || setGlobal(SHARED, {});
+  var store$2 = global$1[SHARED] || setGlobal(SHARED, {});
 
-  var sharedStore = store$1;
+  var sharedStore = store$2;
 
   var functionToString = Function.toString;
 
@@ -461,20 +461,20 @@
   };
 
   if (nativeWeakMap) {
-    var store = sharedStore.state || (sharedStore.state = new WeakMap());
-    var wmget = store.get;
-    var wmhas = store.has;
-    var wmset = store.set;
+    var store$1 = sharedStore.state || (sharedStore.state = new WeakMap());
+    var wmget = store$1.get;
+    var wmhas = store$1.has;
+    var wmset = store$1.set;
     set = function (it, metadata) {
       metadata.facade = it;
-      wmset.call(store, it, metadata);
+      wmset.call(store$1, it, metadata);
       return metadata;
     };
     get = function (it) {
-      return wmget.call(store, it) || {};
+      return wmget.call(store$1, it) || {};
     };
     has = function (it) {
-      return wmhas.call(store, it);
+      return wmhas.call(store$1, it);
     };
   } else {
     var STATE = sharedKey('state');
@@ -9960,22 +9960,49 @@
     constants: constants_1
   };
 
+  var store = {};
+  var Privacy = {
+    setItem: function setItem(key, value) {
+      store[key] = value;
+      return true;
+    },
+    getItem: function getItem(key) {
+      return store[key];
+    },
+    removeItem: function removeItem(key) {
+      delete store[key];
+      return true;
+    }
+  };
+
   var Store = /*#__PURE__*/function () {
     function Store(engine) {
       _classCallCheck(this, Store);
 
-      this.engine = engine;
+      switch (engine) {
+        case 'localStorage':
+        case 'sessionStorage':
+          this.engine = window[engine];
+          break;
+
+        case 'Privacy':
+          this.engine = Privacy;
+          break;
+
+        default:
+          throw new AppError(Severity.ERROR, 'Unknow engine');
+      }
     }
 
     _createClass(Store, [{
       key: "set",
       value: function set(key, object) {
-        window[this.engine].setItem(key, Array.from(pako.deflate(JSON.stringify(object))).join(','));
+        this.engine.setItem(key, Array.from(pako.deflate(JSON.stringify(object))).join(','));
       }
     }, {
       key: "get",
       value: function get(key) {
-        var value = window[this.engine].getItem(key);
+        var value = this.engine.getItem(key);
 
         if (value) {
           try {
@@ -9994,7 +10021,7 @@
     }, {
       key: "delete",
       value: function _delete(key) {
-        return window[this.engine].removeItem(key);
+        return this.engine.removeItem(key);
       }
     }]);
 
