@@ -1,5 +1,5 @@
 
-/*! @timeone-group/storage-js 0.1.4 https://github.com/https://github.com/TimeOne-Group/storage-js#readme @license GPL-3.0 */
+/*! @timeone-group/storage-js 0.2.1 https://github.com/https://github.com/TimeOne-Group/storage-js#readme @license GPL-3.0 */
 import { AppError, Severity, Logger } from '@timeone-group/error-logger-js';
 import pako from 'pako';
 
@@ -1722,7 +1722,7 @@ class Store {
         this.engine = window[engine];
         break;
 
-      case 'Privacy':
+      case 'InApp':
         this.engine = Privacy;
         break;
 

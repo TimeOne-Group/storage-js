@@ -1,6 +1,6 @@
 import { AppError, Logger, Severity } from '@timeone-group/error-logger-js';
 import pako from 'pako';
-import Privacy from './Engine/Privacy';
+import InApp from './Engine/InApp';
 
 class Store {
   constructor(engine) {
@@ -10,8 +10,8 @@ class Store {
         this.engine = window[engine];
         break;
 
-      case 'Privacy':
-        this.engine = Privacy;
+      case 'InApp':
+        this.engine = InApp;
         break;
 
       default:

@@ -4,7 +4,7 @@ import delay from 'await-delay';
 import StorageJS from '../src/index';
 
 const store = new StorageJS();
-const storePrivacy = new StorageJS({ storageEngine: 'Privacy' });
+const storeInApp = new StorageJS({ storageEngine: 'InApp' });
 
 test('save object', (t) => {
   const object = { id: 'uuid', test: 'ok' };
@@ -102,13 +102,13 @@ test('Unknow engine', (t) => {
 
 test('save Privacy object', (t) => {
   const object = { id: 'privacy', test: 'ok' };
-  storePrivacy.save(object);
-  t.deepEqual(storePrivacy.find('privacy'), object);
+  storeInApp.save(object);
+  t.deepEqual(storeInApp.find('privacy'), object);
 });
 
 test('delete Privacy object', (t) => {
   const object = { id: 'privacyDelete', test: 'ok' };
-  storePrivacy.save(object);
-  storePrivacy.delete('privacyDelete');
-  t.deepEqual(storePrivacy.find('privacyDelete'), {});
+  storeInApp.save(object);
+  storeInApp.delete('privacyDelete');
+  t.deepEqual(storeInApp.find('privacyDelete'), {});
 });
