@@ -1,5 +1,5 @@
 
-/*! @timeone-group/storage-js 0.1.4 https://github.com/https://github.com/TimeOne-Group/storage-js#readme @license GPL-3.0 */
+/*! @timeone-group/storage-js 0.2.1 https://github.com/https://github.com/TimeOne-Group/storage-js#readme @license GPL-3.0 */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -9985,7 +9985,7 @@
           this.engine = window[engine];
           break;
 
-        case 'Privacy':
+        case 'InApp':
           this.engine = Privacy;
           break;
 
