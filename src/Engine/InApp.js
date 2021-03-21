@@ -1,6 +1,6 @@
 const store = {};
 
-const Privacy = {
+const InApp = {
   setItem: (key, value) => {
     store[key] = value;
     return true;
@@ -12,4 +12,4 @@ const Privacy = {
   },
 };
 
-export default Privacy;
+export default InApp;
