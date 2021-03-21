@@ -1,5 +1,5 @@
 
-/*! @timeone-group/storage-js 0.2.1 https://github.com/https://github.com/TimeOne-Group/storage-js#readme @license GPL-3.0 */
+/*! @timeone-group/storage-js 0.2.2 https://github.com/https://github.com/TimeOne-Group/storage-js#readme @license GPL-3.0 */
 import { AppError, Severity, Logger } from '@timeone-group/error-logger-js';
 import pako from 'pako';
 
@@ -1702,7 +1702,7 @@ class Key {
 
 const store = {};
 
-const Privacy = {
+const InApp = {
   setItem: (key, value) => {
     store[key] = value;
     return true;
@@ -1723,7 +1723,7 @@ class Store {
         break;
 
       case 'InApp':
-        this.engine = Privacy;
+        this.engine = InApp;
         break;
 
       default:
