@@ -1,5 +1,5 @@
 import { AppError, Logger, Severity } from '@timeone-group/error-logger-js';
-import pako from 'pako';
+import LZString from 'lz-string';
 import InApp from './Engine/InApp';
 
 class Store {
@@ -20,10 +20,7 @@ class Store {
   }
 
   set(key, object) {
-    this.engine.setItem(
-      key,
-      Array.from(pako.deflate(JSON.stringify(object))).join(',')
-    );
+    this.engine.setItem(key, LZString.compress(JSON.stringify(object)));
   }
 
   get(key) {
@@ -31,12 +28,7 @@ class Store {
 
     if (value) {
       try {
-        const compressed = new Uint8Array(value.split(','));
-        return JSON.parse(
-          pako.inflate(compressed, {
-            to: 'string',
-          })
-        );
+        return JSON.parse(LZString.decompress(value));
       } catch (e) {
         Logger.catchError(e);
         return null;

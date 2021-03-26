@@ -31,7 +31,7 @@
   "dependencies": {
     "@timeone-group/error-logger-js": "^0.2.2",
     "core-js": "^3.9.1",
-    "pako": "^2.0.3"
+    "lz-string": "^1.4.4"
   },
   "devDependencies": {
     "@ava/babel": "^1.0.1",

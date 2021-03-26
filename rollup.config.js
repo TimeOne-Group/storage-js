@@ -10,6 +10,8 @@ const banner = {
   },
 };
 
+const external = ['@timeone-group/error-logger-js'];
+
 export default [
   {
     input: 'src/index.js',
@@ -23,10 +25,7 @@ export default [
       commonjs(),
       babel({
         babelHelpers: 'bundled',
-        exclude: babelLoaderExcludeNodeModulesExcept([
-          'pako',
-          '@timeone-group/error-logger-js',
-        ]),
+        exclude: babelLoaderExcludeNodeModulesExcept(external),
       }),
       banner,
     ],
@@ -35,7 +34,7 @@ export default [
     input: 'src/index.js',
     output: [{ file: 'dist/index.mjs', format: 'esm' }],
     plugins: [nodeResolve(), commonjs(), banner],
-    external: ['pako', '@timeone-group/error-logger-js'],
+    external,
   },
   {
     input: 'src/index.js',
@@ -48,6 +47,6 @@ export default [
       },
     ],
     plugins: [nodeResolve(), commonjs(), banner],
-    external: ['pako', '@timeone-group/error-logger-js'],
+    external,
   },
 ];
