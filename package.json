@@ -1,6 +1,6 @@
 {
   "name": "@timeone-group/storage-js",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Store data in browser",
   "main": "src/index.js",
   "module": "./dist/index.mjs",
