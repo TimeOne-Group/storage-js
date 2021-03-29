@@ -1,5 +1,5 @@
 
-/*! @timeone-group/storage-js 0.3.0 https://github.com/https://github.com/TimeOne-Group/storage-js#readme @license GPL-3.0 */
+/*! @timeone-group/storage-js 0.3.1 https://github.com/https://github.com/TimeOne-Group/storage-js#readme @license GPL-3.0 */
 import { AppError, Severity, Logger } from '@timeone-group/error-logger-js';
 
 var ceil = Math.ceil;
@@ -2232,7 +2232,7 @@ class Store {
   }
 
   set(key, object) {
-    this.engine.setItem(key, lzString.compress(JSON.stringify(object)));
+    this.engine.setItem(key, lzString.compressToBase64(JSON.stringify(object)));
   }
 
   get(key) {
@@ -2240,7 +2240,7 @@ class Store {
 
     if (value) {
       try {
-        return JSON.parse(lzString.decompress(value));
+        return JSON.parse(lzString.decompressFromBase64(value));
       } catch (e) {
         Logger.catchError(e);
         return null;
