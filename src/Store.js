@@ -20,7 +20,7 @@ class Store {
   }
 
   set(key, object) {
-    this.engine.setItem(key, LZString.compress(JSON.stringify(object)));
+    this.engine.setItem(key, LZString.compressToBase64(JSON.stringify(object)));
   }
 
   get(key) {
@@ -28,7 +28,7 @@ class Store {
 
     if (value) {
       try {
-        return JSON.parse(LZString.decompress(value));
+        return JSON.parse(LZString.decompressFromBase64(value));
       } catch (e) {
         Logger.catchError(e);
         return null;

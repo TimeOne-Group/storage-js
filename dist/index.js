@@ -1,5 +1,5 @@
 
-/*! @timeone-group/storage-js 0.3.0 https://github.com/https://github.com/TimeOne-Group/storage-js#readme @license GPL-3.0 */
+/*! @timeone-group/storage-js 0.3.1 https://github.com/https://github.com/TimeOne-Group/storage-js#readme @license GPL-3.0 */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -2491,7 +2491,7 @@
     _createClass(Store, [{
       key: "set",
       value: function set(key, object) {
-        this.engine.setItem(key, lzString.compress(JSON.stringify(object)));
+        this.engine.setItem(key, lzString.compressToBase64(JSON.stringify(object)));
       }
     }, {
       key: "get",
@@ -2500,7 +2500,7 @@
 
         if (value) {
           try {
-            return JSON.parse(lzString.decompress(value));
+            return JSON.parse(lzString.decompressFromBase64(value));
           } catch (e) {
             Logger.catchError(e);
             return null;
